@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../store/auth";
-import { api } from "../../api";
+import { createBooking } from "../../lib/liveApi";
 import { toast } from "react-toastify";
 import design from '../../images/design.png';
 
 const Service = () => {
-  const { services, isLoggedIn, token } = useAuth();
+  const { services, isLoggedIn } = useAuth();
   const navigate = useNavigate();
   const [active, setActive] = useState(null);
   const [form, setForm] = useState({ scheduledAt: "", address: "", note: "" });
@@ -28,11 +28,11 @@ const Service = () => {
   const submitBooking = async (e) => {
     e.preventDefault();
     try {
-      const t = token || localStorage.getItem("token");
-      await api("/api/bookings", {
-        method: "POST",
-        token: t,
-        body: { service: active._id, ...form },
+      await createBooking({
+        service_id: active.id,
+        scheduled_at: new Date(form.scheduledAt).toISOString(),
+        address: form.address,
+        note: form.note,
       });
       toast.success("Booking created! Track it in My Bookings.");
       setActive(null);
@@ -56,26 +56,24 @@ const Service = () => {
       </div>
 
       <div className="container grid grid-three-cols">
-        {filtered.map((curElem, index) => {
-          const { name, category, description, price, duration } = curElem;
-          return (
-            <div className="card lift" key={curElem._id || index}>
-              <div className="card-img">
-                <img src={design} alt="service" width="200" />
-              </div>
-              <div className="card-details">
-                <div className="grid grid-two-cols">
-                  <p>{name}</p>
-                  <p>{category}</p>
-                </div>
-                <h2>{description}</h2>
-                <p>Price (per visit): ₹{price}</p>
-                <p>Duration (min): {duration}</p>
-                <button className="submit" onClick={() => openBook(curElem)}>Book Now</button>
-              </div>
+        {filtered.length === 0 && <p>No services found. Check Supabase keys + seed.</p>}
+        {filtered.map((s, index) => (
+          <div className="card lift" key={s.id || index}>
+            <div className="card-img">
+              <img src={design} alt="service" width="200" />
             </div>
-          );
-        })}
+            <div className="card-details">
+              <div className="grid grid-two-cols">
+                <p>{s.name}</p>
+                <p>{s.category}</p>
+              </div>
+              <h2>{s.description}</h2>
+              <p>Price (per visit): ₹{s.price}</p>
+              <p>Duration (min): {s.duration}</p>
+              <button className="submit" onClick={() => openBook(s)}>Book Now</button>
+            </div>
+          </div>
+        ))}
         <p>*Additional charges may apply based on inspection*</p>
       </div>
 

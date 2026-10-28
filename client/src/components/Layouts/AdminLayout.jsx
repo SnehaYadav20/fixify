@@ -10,7 +10,7 @@ const AdminLayout = () => {
     return <h1>LOADING.........</h1>
   }
 
-  if(!user.isAdmin){
+  if(!user || (user.role !== "admin" && !user.isAdmin)){
     return <Navigate to="/"/>
   }
   return (

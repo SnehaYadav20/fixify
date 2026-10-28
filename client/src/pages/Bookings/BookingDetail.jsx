@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useAuth } from "../../store/auth";
-import { api } from "../../api";
+import { supabase } from "../../supabaseClient";
+import { myBookings, getMessages, sendMessage, createReview, providerReviews } from "../../lib/liveApi";
 import { toast } from "react-toastify";
 
 const BookingDetail = () => {
   const { id } = useParams();
-  const { token } = useAuth();
-  const t = () => token || localStorage.getItem("token");
   const [booking, setBooking] = useState(null);
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState("");
@@ -17,41 +15,46 @@ const BookingDetail = () => {
 
   const load = async () => {
     try {
-      const all = await api("/api/bookings/mine", { token: t() });
-      setBooking(all.find((b) => b._id === id));
-      const m = await api(`/api/messages/${id}`, { token: t() });
-      setMsgs(m);
-      // provider reviews if provider known
-      const b = all.find((x) => x._id === id);
-      if (b?.provider?._id) {
-        const r = await api(`/api/reviews/provider/${b.provider._id}`);
-        setReviews(r);
-      }
+      const all = await myBookings();
+      const b = all.find((x) => x.id === id);
+      setBooking(b || null);
+      setMsgs(await getMessages(id));
+      if (b?.provider?.id) setReviews(await providerReviews(b.provider.id));
     } catch (e) {
       toast.error(e.message);
     }
   };
 
-  useEffect(() => { load(); const i = setInterval(load, 5000); return () => clearInterval(i); }, [id]);
+  useEffect(() => {
+    load();
+    // live realtime chat
+    const ch = supabase.channel(`booking-${id}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `booking_id=eq.${id}` }, load)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const send = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
-    await api(`/api/messages/${id}`, { method: "POST", body: { text }, token: t() });
-    setText("");
-    load();
+    try {
+      await sendMessage(id, text.trim());
+      setText("");
+      load();
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
-  const payMock = async () => {
-    // mock payment: just mark flow complete via status note + toast
-    toast.success("Mock payment successful (UPI/Card stub). Marking as paid in UI.");
-    // In real Razorpay/Stripe you'd verify webhook then set paymentStatus=paid server-side.
+  const payMock = () => {
+    toast.success("Mock payment successful. Plug Razorpay/Stripe order + webhook to mark paid for real.");
   };
 
   const submitReview = async (e) => {
     e.preventDefault();
     try {
-      await api("/api/reviews", { method: "POST", body: { booking: id, rating: Number(rating), comment }, token: t() });
+      await createReview({ booking_id: id, provider_id: booking.provider?.id, rating: Number(rating), comment });
       toast.success("Thanks for the review!");
       setComment("");
       load();
@@ -64,16 +67,16 @@ const BookingDetail = () => {
 
   return (
     <section className="container page-enter">
-      <h1 className="main-heading">{booking.service?.name} — {booking.status}</h1>
-      <p>{new Date(booking.scheduledAt).toLocaleString()} · {booking.address}</p>
+      <h1 className="main-heading">{booking.services?.name} — {booking.status}</h1>
+      <p>{booking.scheduled_at ? new Date(booking.scheduled_at).toLocaleString() : ""} · {booking.address}</p>
       <p>Customer: {booking.customer?.name} · Provider: {booking.provider?.name || "awaiting"}</p>
 
       <div className="grid grid-two-cols" style={{ marginTop: "2rem" }}>
         <div>
-          <h2>Chat (per booking)</h2>
+          <h2>Chat (live)</h2>
           <div className="chat-box">
             {msgs.map((m) => (
-              <div key={m._id} className={`chat-msg ${String(m.sender?._id || m.sender) === String(booking.customer?._id) ? "chat-them" : "chat-me"}`}>
+              <div key={m.id} className="chat-msg chat-them">
                 <div style={{ fontSize: "1.2rem", opacity: 0.7 }}>{m.sender?.name}</div>
                 {m.text}
               </div>
@@ -88,7 +91,7 @@ const BookingDetail = () => {
 
         <div>
           <h2>Payment (mock)</h2>
-          <p>Price: ₹{booking.service?.price || booking.priceQuoted || "—"} · Status: {booking.paymentStatus}</p>
+          <p>Price: ₹{booking.services?.price} · Status: {booking.payment_status}</p>
           <button onClick={payMock}>Pay now (mock)</button>
 
           <h2 style={{ marginTop: "2rem" }}>Review provider</h2>
@@ -108,7 +111,7 @@ const BookingDetail = () => {
             <>
               <h3>Provider reviews</h3>
               {reviews.map((r) => (
-                <p key={r._id}>⭐ {r.rating} — {r.comment} <small>by {r.customer?.name}</small></p>
+                <p key={r.id}>⭐ {r.rating} — {r.comment} <small>by {r.customer?.name}</small></p>
               ))}
             </>
           )}
