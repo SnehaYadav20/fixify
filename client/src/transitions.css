@@ -1,0 +1,88 @@
+/* Page fade/slide transition for all routes */
+.page-enter {
+  animation: pageIn 0.35s ease both;
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Card hover lift */
+.lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(39, 49, 236, 0.18);
+}
+
+/* Status pills */
+.pill {
+  display: inline-block;
+  padding: 0.3rem 1.2rem;
+  border-radius: 999px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.pill-pending { background: #fff3cd; color: #856404; }
+.pill-accepted { background: #cce5ff; color: #004085; }
+.pill-in_progress { background: #d4edda; color: #155724; }
+.pill-completed { background: #d1ecf1; color: #0c5460; }
+.pill-cancelled { background: #f8d7da; color: #721c24; }
+.pill-paid { background: #d4edda; color: #155724; }
+.pill-unpaid { background: #fff3cd; color: #856404; }
+
+/* Simple modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: pageIn 0.2s ease both;
+}
+.modal-card {
+  background: #fff;
+  border-radius: 1.2rem;
+  padding: 2.4rem;
+  width: min(560px, 92vw);
+  max-height: 88vh;
+  overflow: auto;
+}
+
+/* Chat */
+.chat-box {
+  border: 1px solid #e2e2e2;
+  border-radius: 1rem;
+  height: 320px;
+  overflow-y: auto;
+  padding: 1.2rem;
+  background: #fafbff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.chat-msg {
+  max-width: 75%;
+  padding: 0.8rem 1.2rem;
+  border-radius: 1.2rem;
+  font-size: 1.5rem;
+}
+.chat-me { align-self: flex-end; background: #2731ec; color: #fff; }
+.chat-them { align-self: flex-start; background: #eef1ff; color: #111; }
+
+/* Skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #eee 25%, #ddd 37%, #eee 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 0.8rem;
+  min-height: 1.6rem;
+}
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}

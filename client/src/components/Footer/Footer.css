@@ -1,0 +1,52 @@
+/* Footer Styles */
+footer {
+  margin-top: 15px;
+}
+
+.foot-panel1 a {
+  color: white;
+}
+.foot-panel1 {
+  background-color: #45424a;
+  color: white;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.foot-panel2 {
+  background-color: #6d6875;
+  color: white;
+  height: 180px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+
+ul h2 {
+    margin-top: 5px;
+    color: white;
+    text-decoration: underline;
+}
+
+ul a {
+  display: block;
+  font-size: 1rem;
+  margin-top: 10px;
+  color: white;
+}
+
+.pages {
+  padding-top: 20px;
+}
+
+.copyright {
+  background-color: #45424a;
+  color: white;
+  height: 40px;
+  font-size: 0.7rem;
+  text-align: center;
+  padding-top: 15px;
+}

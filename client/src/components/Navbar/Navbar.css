@@ -1,0 +1,59 @@
+/* Navbar.css */
+
+header {
+  background-color: #6d6875; /* Change the background color as per your design */
+}
+
+.container {
+  max-width: 10rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Align items vertically */
+
+}
+
+
+.logo-brand a {
+  color: #fff; /* Change color as per your design */
+  font-size: 3rem; /* Adjust font size as needed */
+  font-weight: bold; /* Adjust font weight as needed */
+  text-decoration: underline; /* Remove underline */
+}
+
+
+nav ul {
+  list-style: none; /* Remove default list styles */
+  margin: 0;
+
+  padding: 0;
+  display: flex;
+
+  gap: 2.4rem;
+}
+
+
+
+nav ul li a {
+  color: white; /* Change color as per your design */
+  text-decoration: none; /* Remove underline */
+  font-size: 1.6rem; /* Adjust font size as needed */
+  display: inline-block; /* Make links inline-block for button-like appearance */
+  padding: 1rem 1rem; /* Add padding for spacing */
+  border-radius: 0.5rem; /* Add border radius for rounded corners */
+  background-color: transparent; /* Set background color */
+  border: 2px solid transparent; /* Set border */
+  
+  font-weight: bold;
+  transition: background-color 0.3s, border-color 0.3s; /* Add transition for smooth color change */
+}
+
+nav ul li a:hover {
+  background-color: #fff; /* Change background color on hover */
+  color: #333; /* Change text color on hover */
+  border-color: #fff; /* Change border color on hover */
+}
+
+/* Icon styles */
+.nav-icon {
+  margin-right: 0.8rem; /* Adjust margin as needed */
+}

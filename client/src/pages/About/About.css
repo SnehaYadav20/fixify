@@ -1,0 +1,47 @@
+/* About.css */
+
+.about-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  h1 {
+    font-size: 36px;
+    color: #fff; /* White color */
+    margin-bottom: 20px;
+  }
+  
+  h2 {
+    font-size: 24px;
+    color: #fff; /* White color */
+    margin-top: 40px;
+    margin-bottom: 16px;
+    
+  }
+
+  .our-values {
+    padding: 2rem; /* Adjust top, right, bottom, and left padding as desired */
+  }
+  
+  
+  p {
+    font-size: 20px;
+    margin: 2rem 0 0 2rem; 
+    color: #fff; /* White color */
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+  
+  ul {
+    list-style-type: disc;
+    color: #fff; /* White color */
+    margin-left: 20px;
+    margin-bottom: 20px;
+  }
+  
+  li {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  
